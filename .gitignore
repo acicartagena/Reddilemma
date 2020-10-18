@@ -66,3 +66,4 @@ fastlane/screenshots/**/*.png
 fastlane/test_output
 *.xcuserstate
 /Reddilemma/Secrets.swift
+/RedditAPI/Sources/RedditAPI/Secrets.swift
