@@ -1,12 +1,13 @@
 // Copyright © 2020 ACartagena. All rights reserved.
 
 import Foundation
+import RedditAPI
 import KeychainAccess
 
 protocol KeychainStoring {
     var accessToken: String? { get set }
     var refreshToken: String? { get set }
-    func save(accessToken: AccessTokenResponse) 
+//    func save(tokens: AuthenticationToken)
 }
 
 class KeychainStore: KeychainStoring {
@@ -23,13 +24,13 @@ class KeychainStore: KeychainStoring {
         set { keychain["refreshToken"] = newValue }
     }
 
-    func save(accessToken: AccessTokenResponse) {
-        self.accessToken = accessToken.accessToken
-        self.refreshToken = accessToken.refreshToken
-        print("\(keychain)")
-        let items = keychain.allItems()
-        for item in items {
-          print("item: \(item)")
-        }
-    }
+//    func save(tokens: AuthenticationToken) {
+//        self.accessToken = tokens.accessToken
+//        self.refreshToken = tokens.refreshToken
+//        print("\(keychain)")
+//        let items = keychain.allItems()
+//        for item in items {
+//          print("item: \(item)")
+//        }
+//    }
 }

@@ -23,22 +23,15 @@ public class Authentication {
 
     private let scheme = Secrets.scheme
 
-    private var keychainStore: KeychainStoring
     private let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         return decoder
     }()
 
-    public convenience init() {
-        self.init(keychainStore: KeychainStore())
-    }
+    public init() { }
 
-    init(keychainStore: KeychainStoring = KeychainStore()) {
-        self.keychainStore = keychainStore
-    }
-
-    public func authorize(additionalScope: [Scope] = [], contextProviding: ASWebAuthenticationPresentationContextProviding?) -> AnyPublisher<AccessToken, AuthenticationError> {
+    public func authorize(additionalScope: [Scope] = [], contextProviding: ASWebAuthenticationPresentationContextProviding?) -> AnyPublisher<AuthenticationToken, AuthenticationError> {
         let authorize = Future<AuthorizationCode, AuthenticationError> { [weak self] completion in
             let authURL = AuthorizeRequest(state: Constants.state, scope: additionalScope).url
             let authSession = ASWebAuthenticationSession(url: authURL, callbackURLScheme: self?.scheme) { (url, error) in
@@ -58,10 +51,7 @@ public class Authentication {
 
         return authorize
             .flatMap(fetchAccessToken)
-            .map { [weak self] (response: AccessTokenResponse) -> String in
-                self?.keychainStore.save(accessToken: response) // todo: figure out how to perform side effects (or better place to store this?)
-                return response.accessToken
-            }
+            .map { AuthenticationToken(response: $0) }
             .eraseToAnyPublisher()
     }
 
@@ -81,8 +71,8 @@ public class Authentication {
         .eraseToAnyPublisher()
     }
 
-    public func refresh() -> AnyPublisher<RefreshTokenResponse, AuthenticationError> {
-        let request = RefreshTokenRequest(refreshToken: keychainStore.refreshToken!).urlRequest
+    public func refresh(using refreshToken: String) -> AnyPublisher<AccessToken, AuthenticationError> {
+        let request = RefreshTokenRequest(refreshToken: refreshToken).urlRequest
 
         return URLSession.shared.dataTaskPublisher(for: request)
             .tryMap() { element -> Data in
@@ -94,10 +84,7 @@ public class Authentication {
             }
         .decode(type: RefreshTokenResponse.self, decoder: decoder)
         .mapError { error in AuthenticationError.accessToken(error) }
-        .map { [weak self] (response: RefreshTokenResponse) in
-                self?.keychainStore.accessToken = response.accessToken
-                return response
-        }
+        .map { $0.accessToken }
         .eraseToAnyPublisher()
     }
 }
