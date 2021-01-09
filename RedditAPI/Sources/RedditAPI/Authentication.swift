@@ -29,7 +29,14 @@ public class Authentication {
         return decoder
     }()
 
-    public init() { }
+    private let networking: NetworkingActions
+    public convenience init() {
+        self.init(networking: Networking.shared)
+    }
+
+    init(networking: Networking) {
+        self.networking = networking
+    }
 
     public func authorize(additionalScope: [Scope] = [], contextProviding: ASWebAuthenticationPresentationContextProviding?) -> AnyPublisher<AuthenticationToken, AuthenticationError> {
         let authorize = Future<AuthorizationCode, AuthenticationError> { [weak self] completion in
@@ -57,18 +64,10 @@ public class Authentication {
 
     private func fetchAccessToken(code: String) -> AnyPublisher<AccessTokenResponse, AuthenticationError> {
         guard code != "" else { return Fail(error: AuthenticationError.noAccessToken).eraseToAnyPublisher() }
-        let request = AccessTokenRequest(code: code).urlRequest
-        return URLSession.shared.dataTaskPublisher(for: request)
-            .tryMap() { element -> Data in
-                guard let httpResponse = element.response as? HTTPURLResponse,
-                    httpResponse.statusCode == 200 else {
-                        throw URLError(.badServerResponse)
-                }
-                return element.data
-            }
-        .decode(type: AccessTokenResponse.self, decoder: decoder)
-        .mapError { error in AuthenticationError.accessToken(error) }
-        .eraseToAnyPublisher()
+        let urlRequest = AccessTokenRequest(code: code).urlRequest
+        return (networking.httpRequest(for: urlRequest) as AnyPublisher<AccessTokenResponse, Error>)
+            .mapError { error in AuthenticationError.accessToken(error) }
+            .eraseToAnyPublisher()
     }
 
     public func refresh() -> AnyPublisher<AccessToken, AuthenticationError> {
@@ -77,19 +76,10 @@ public class Authentication {
     }
 
     private func refresh(using refreshToken: String) -> AnyPublisher<AccessToken, AuthenticationError> {
-        let request = RefreshTokenRequest(refreshToken: refreshToken).urlRequest
-
-        return URLSession.shared.dataTaskPublisher(for: request)
-            .tryMap() { element -> Data in
-                guard let httpResponse = element.response as? HTTPURLResponse,
-                    httpResponse.statusCode == 200 else {
-                        throw URLError(.badServerResponse)
-                }
-                return element.data
-            }
-        .decode(type: RefreshTokenResponse.self, decoder: decoder)
-        .mapError { error in AuthenticationError.accessToken(error) }
-        .map { $0.accessToken }
-        .eraseToAnyPublisher()
+        let urlRequest = RefreshTokenRequest(refreshToken: refreshToken).urlRequest
+        return (networking.httpRequest(for: urlRequest) as AnyPublisher<RefreshTokenResponse, Error>)
+            .mapError { error in AuthenticationError.accessToken(error) }
+            .map { $0.accessToken }
+            .eraseToAnyPublisher()
     }
 }

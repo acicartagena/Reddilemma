@@ -1,21 +1,41 @@
 // Copyright © 2020 ACartagena. All rights reserved.
 
 import Foundation
+import KeychainAccess
 
 protocol KeychainStoring {
-    var accessToken: String? { get set }
+    var accessToken: AccessToken? { get set }
     var refreshToken: String? { get set }
-//    func save(tokens: AuthenticationToken)
 }
 
 class KeychainStore: KeychainStoring {
+    static let shared = KeychainStore()
     private static let serviceName = "com.acicartagena.Reddilemma"
-//    private let keychain = Keychain(service: KeychainStore.serviceName)
-    private var keychain: [String: String] = [:]
+    private let keychain = Keychain(service: KeychainStore.serviceName)
 
-    var accessToken: String? {
-        get { return keychain["accessToken"] }
-        set { keychain["accessToken"] = newValue }
+    private let decoder = JSONDecoder()
+    private let encoder = JSONEncoder()
+
+    private init() { }
+
+    var accessToken: AccessToken? {
+        get {
+            let data = keychain[data: "accessToken"]
+            guard let accessTokenData = data,
+                  let token = try? decoder.decode(AccessToken.self, from: accessTokenData)
+            else {
+                print("Error: can't decode \(String(describing: data)) for AccessToken")
+                return nil
+            }
+            return token
+        }
+        set {
+            guard let data = try? encoder.encode(newValue) else {
+                print("Error: can't encode \(String(describing: newValue)) for AccessToken")
+                return
+            }
+            keychain[data: "accessToken"] = data
+        }
     }
 
     var refreshToken: String? {
@@ -23,13 +43,4 @@ class KeychainStore: KeychainStoring {
         set { keychain["refreshToken"] = newValue }
     }
 
-//    func save(tokens: AuthenticationToken) {
-//        self.accessToken = tokens.accessToken
-//        self.refreshToken = tokens.refreshToken
-//        print("\(keychain)")
-//        let items = keychain.allItems()
-//        for item in items {
-//          print("item: \(item)")
-//        }
-//    }
 }

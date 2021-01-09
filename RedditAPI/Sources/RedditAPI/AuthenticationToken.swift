@@ -3,11 +3,11 @@
 import Foundation
 
 public struct AuthenticationToken {
-    public let accessToken: String
+    public let token: AccessToken
     public let refreshToken: String
 
     init(response: AccessTokenResponse) {
-        self.accessToken = response.accessToken
+        self.token = AccessToken(accessTokenResponse: response)
         self.refreshToken = response.refreshToken
     }
 }
