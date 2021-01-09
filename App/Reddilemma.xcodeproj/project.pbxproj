@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		355D675B254580A3006DA17B /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355D675A254580A2006DA17B /* KeychainStore.swift */; };
 		35AA7668253AE55900B18E5D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35AA7667253AE55900B18E5D /* AppDelegate.swift */; };
 		35AA766A253AE55900B18E5D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35AA7669253AE55900B18E5D /* SceneDelegate.swift */; };
 		35AA766C253AE55900B18E5D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35AA766B253AE55900B18E5D /* ContentView.swift */; };
@@ -31,7 +30,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		355D675A254580A2006DA17B /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
 		35AA7664253AE55900B18E5D /* Reddilemma.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Reddilemma.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		35AA7667253AE55900B18E5D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		35AA7669253AE55900B18E5D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -95,7 +93,6 @@
 				35AA7667253AE55900B18E5D /* AppDelegate.swift */,
 				35AA7669253AE55900B18E5D /* SceneDelegate.swift */,
 				35AA766B253AE55900B18E5D /* ContentView.swift */,
-				355D675A254580A2006DA17B /* KeychainStore.swift */,
 				35AA7689253AE6E300B18E5D /* LoginService.swift */,
 				35AA766D253AE55A00B18E5D /* Assets.xcassets */,
 				35AA7672253AE55A00B18E5D /* LaunchScreen.storyboard */,
@@ -241,7 +238,6 @@
 				35AA766A253AE55900B18E5D /* SceneDelegate.swift in Sources */,
 				35AA766C253AE55900B18E5D /* ContentView.swift in Sources */,
 				35AA768A253AE6E300B18E5D /* LoginService.swift in Sources */,
-				355D675B254580A3006DA17B /* KeychainStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

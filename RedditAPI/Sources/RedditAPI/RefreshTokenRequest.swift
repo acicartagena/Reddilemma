@@ -10,7 +10,6 @@ struct RefreshTokenRequest {
                                             URLQueryItem(name: "refresh_token", value: refreshToken)]
 
         let url = URL(string: "https://www.reddit.com/api/v1/access_token/")!
-        var request = RedditAPIURLRequestBuilder(url: url, urlComponentsQuery: requestBodyComponents).build()
-        urlRequest = request
+        urlRequest = RedditAPIURLRequestBuilder(url: url, urlComponentsQuery: requestBodyComponents).build()
     }
 }

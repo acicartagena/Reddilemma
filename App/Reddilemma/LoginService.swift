@@ -23,7 +23,7 @@ class LoginService: NSObject, ASWebAuthenticationPresentationContextProviding {
     }
 
     func refresh() {
-        authentication.refresh(using: "123").sink(receiveCompletion: { (completion) in
+        authentication.refresh().sink(receiveCompletion: { (completion) in
             print("completion: \(completion)")
         }) { response in
             print("response: \(response)")

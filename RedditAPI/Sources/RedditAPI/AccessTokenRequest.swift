@@ -13,7 +13,7 @@ struct AccessTokenRequest {
 
         let url = URL(string: "https://www.reddit.com/api/v1/access_token/")!
 
-        var request = RedditAPIURLRequestBuilder(url: url, urlComponentsQuery: urlComponents).build()
+        let request = RedditAPIURLRequestBuilder(url: url, urlComponentsQuery: urlComponents).build()
         urlRequest = request
     }
 }

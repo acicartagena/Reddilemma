@@ -71,7 +71,12 @@ public class Authentication {
         .eraseToAnyPublisher()
     }
 
-    public func refresh(using refreshToken: String) -> AnyPublisher<AccessToken, AuthenticationError> {
+    public func refresh() -> AnyPublisher<AccessToken, AuthenticationError> {
+        let refreshToken = ""
+        return refresh(using: refreshToken)
+    }
+
+    private func refresh(using refreshToken: String) -> AnyPublisher<AccessToken, AuthenticationError> {
         let request = RefreshTokenRequest(refreshToken: refreshToken).urlRequest
 
         return URLSession.shared.dataTaskPublisher(for: request)

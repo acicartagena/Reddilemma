@@ -1,8 +1,6 @@
 // Copyright © 2020 ACartagena. All rights reserved.
 
 import Foundation
-import RedditAPI
-import KeychainAccess
 
 protocol KeychainStoring {
     var accessToken: String? { get set }
@@ -12,7 +10,8 @@ protocol KeychainStoring {
 
 class KeychainStore: KeychainStoring {
     private static let serviceName = "com.acicartagena.Reddilemma"
-    private let keychain = Keychain(service: KeychainStore.serviceName)
+//    private let keychain = Keychain(service: KeychainStore.serviceName)
+    private var keychain: [String: String] = [:]
 
     var accessToken: String? {
         get { return keychain["accessToken"] }
