@@ -3,6 +3,11 @@
 import Foundation
 import Combine
 
+public enum NetworkingError: Error {
+    case invalidToken
+    case badServerResponse
+}
+
 public protocol NetworkingActions {
     func httpRequest<T: Decodable>(for request: URLRequest) -> AnyPublisher<T, Error>
 }
@@ -21,7 +26,7 @@ class Networking: NetworkingActions {
             .tryMap() { element -> Data in
                 guard let httpResponse = element.response as? HTTPURLResponse,
                     httpResponse.statusCode == 200 else {
-                        throw URLError(.badServerResponse)
+                    throw NetworkingError.badServerResponse
                 }
                 return element.data
             }

@@ -9,7 +9,7 @@ enum RedditAPIError: Error {
 }
 
 protocol TokenActions {
-    func token(forceRefresh: Bool) -> AnyPublisher<AccessToken, Error>?
+    func token(forceRefresh: Bool) -> AnyPublisher<AccessToken, Error>
 }
 
 class TokenService: TokenActions {
@@ -47,7 +47,7 @@ class TokenService: TokenActions {
 
     // https://www.donnywals.com/building-a-concurrency-proof-token-refresh-flow-in-combine/
 
-    func token(forceRefresh: Bool = false) -> AnyPublisher<AccessToken, Error>? {
+    func token(forceRefresh: Bool = false) -> AnyPublisher<AccessToken, Error> {
         return queue.sync { [weak self] in
             //already fetching a new token
             if let publisher = self?.refreshPublisher {
