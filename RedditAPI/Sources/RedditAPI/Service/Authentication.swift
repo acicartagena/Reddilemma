@@ -5,7 +5,7 @@ import Combine
 import AuthenticationServices
 
 public class Authentication {
-    public typealias AccessToken = String
+//    public typealias AccessToken = String
     public enum AuthenticationError: Swift.Error {
         case authorize(Error)
         case accessToken(Error)
@@ -30,12 +30,15 @@ public class Authentication {
     }()
 
     private let networking: NetworkingActions
+    private var keychainStore: KeychainStoring
+
     public convenience init() {
-        self.init(networking: Networking.shared)
+        self.init(networking: Networking.shared, keychainStore: KeychainStore.shared)
     }
 
-    init(networking: Networking) {
+    init(networking: Networking, keychainStore: KeychainStoring) {
         self.networking = networking
+        self.keychainStore = keychainStore
     }
 
     public func authorize(additionalScope: [Scope] = [], contextProviding: ASWebAuthenticationPresentationContextProviding?) -> AnyPublisher<AuthenticationToken, AuthenticationError> {
@@ -58,7 +61,12 @@ public class Authentication {
 
         return authorize
             .flatMap(fetchAccessToken)
-            .map { AuthenticationToken(response: $0) }
+            .map {
+                let authenticationToken = AuthenticationToken(response: $0)
+                self.keychainStore.refreshToken = authenticationToken.refreshToken // TODO: refreshToken is saved as a side effect
+                self.keychainStore.accessToken = authenticationToken.token // TODO: accessToken is saved as a side effect
+                return authenticationToken
+            }
             .eraseToAnyPublisher()
     }
 
@@ -71,15 +79,8 @@ public class Authentication {
     }
 
     public func refresh() -> AnyPublisher<AccessToken, AuthenticationError> {
-        let refreshToken = ""
-        return refresh(using: refreshToken)
-    }
-
-    private func refresh(using refreshToken: String) -> AnyPublisher<AccessToken, AuthenticationError> {
-        let urlRequest = RefreshTokenRequest(refreshToken: refreshToken).urlRequest
-        return (networking.httpRequest(for: urlRequest) as AnyPublisher<RefreshTokenResponse, Error>)
+        return TokenService().token(forceRefresh: true)
             .mapError { error in AuthenticationError.accessToken(error) }
-            .map { $0.accessToken }
             .eraseToAnyPublisher()
     }
 }

@@ -46,7 +46,6 @@ class TokenService: TokenActions {
     }
 
     // https://www.donnywals.com/building-a-concurrency-proof-token-refresh-flow-in-combine/
-
     func token(forceRefresh: Bool = false) -> AnyPublisher<AccessToken, Error> {
         return queue.sync { [weak self] in
             //already fetching a new token
@@ -54,7 +53,7 @@ class TokenService: TokenActions {
                 return publisher
             }
 
-            guard let token = self?.currentToken else {
+            guard let token = self?.keychainStore.accessToken else {
                 return Fail(error: RedditAPIError.loginRequired)
                         .eraseToAnyPublisher()
             }
